@@ -45,7 +45,6 @@ end
 CreateDir = function(path)
     ffi.C.CreateDirectoryA(path, NULL)
 end
-
 local engineClient = Utils.CreateInterface("engine.dll", "VEngineClient014")
 local engineClientClass = ffi.cast(ffi.typeof("void***"), engineClient)
 local isConsoleVisible = ffi.cast("bool(__thiscall*)(void*)", engineClientClass[0][11])
@@ -145,7 +144,7 @@ local state = {"Global", "Stand", "Move", "Air", "Duck", "Slow walk"}
 local hitboxes = {"generic","head","chest","stomach","left arm","right arm","left leg","right leg","neck"};
 local logs = {}
 logs[#logs+1] = {("<uwusense> Welcome back, "..Cheat.GetCheatUserName().."!"), GlobalVars.tickcount + 300, 0}
-if not Render.InitFont("nl\\<uwusense>\\fonts\\pixel.ttf", 10) then
+if not Render.InitFont("nl\\uwusense\\fonts\\pixel.ttf", 10) then
     logs[#logs+1] = {("<uwusense> Download font in Global Tab!"), GlobalVars.tickcount + 300, 0}
 end
 --kiwisex
@@ -168,10 +167,19 @@ local ui =
     circle = Menu.SwitchColor("Visuals","<uwusense> Main", "Anti-Aim Crosshair Indicator", false, Color.new(0.57, 0.57, 1, 1)),
     circle_style = Menu.Combo("Visuals","<uwusense> Main", "Style", {"Circle", "Arrows"}, 0),
     glowpeek = Menu.SwitchColor("Visuals","<uwusense> Main", "Glow Autopeek", false, Color.new(0.47, 0.47, 1, 0.5)),
+    --pasta here
+    scope = Menu.Switch("Visuals","<uwusense> Main", "Custom Scope", false),
     viewmodel = Menu.Switch("Visuals","<uwusense> Main", "Viewmodel in Scope", false),
-    scope = Menu.SwitchColor("Visuals","<uwusense> Main", "Custom Scope", false, Color.new(1, 1, 1, 1)),
+    offset = Menu.SliderInt("Visuals","<uwusense> Main", "Offset", 10, 0, 500),
+    length = Menu.SliderInt("Visuals","<uwusense> Main", "Length", 60, 0, 1000),
+    anim_speed = Menu.SliderInt("Visuals","<uwusense> Main", "Anim Speed", 15, 1, 30),
+    col_1 = Menu.ColorEdit("Visuals","<uwusense> Main", "Primary color", Color.RGBA(255, 255, 255)),
+    col_2 = Menu.ColorEdit("Visuals","<uwusense> Main", "Secondary color", Color.RGBA(255, 255, 255, 0)),
+    --pasta here
+    
+    --[[scope = Menu.SwitchColor("Visuals","<uwusense> Main", "Custom Scope", false, Color.new(1, 1, 1, 1)),
     offset = Menu.SliderInt("Visuals","<uwusense> Main", "Offset", 5, -500, 500),
-    length = Menu.SliderInt("Visuals","<uwusense> Main", "Length", 25, 0, 1000),
+    length = Menu.SliderInt("Visuals","<uwusense> Main", "Length", 25, 0, 1000),]]
     color = Menu.ColorEdit("Visuals","<uwusense> Main", "Accent Color", Color.new(0.57, 0.57, 1, 1)),
 
     --indicators
@@ -204,6 +212,104 @@ local ui =
     trashtalk = Menu.Switch("Misc","<uwusense> Misc","Trashtalk", false),
     tpanim = Menu.Switch("Misc","<uwusense> Misc","Disable Thirdperson Animation", false),
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--custom scoper
+local scope_line = {}
+
+scope_line.var = Menu.FindVar("Visuals", "View", "Camera", "Remove Scope")
+scope_line.screen = EngineClient:GetScreenSize()
+scope_line.ref = scope_line.var:GetInt()
+
+scope_line.menu = {}
+
+
+
+scope_line.anim_num = 0
+
+scope_line.lerp = function(a, b, t)
+    return a + (b - a) * t
+end
+
+scope_line.on_draw = function()
+    if ui.scope:GetBool() then
+        scope_line.var:SetInt(2)
+        local_player = EntityList.GetLocalPlayer()
+        scope_line.anim_speed = ui.anim_speed:Get()
+
+        if not local_player or not local_player:IsAlive() or not local_player:GetProp("m_bIsScoped") then 
+            scope_line.anim_num = scope_line.lerp(scope_line.anim_num, 0, scope_line.anim_speed * GlobalVars.frametime)
+        else
+            scope_line.anim_num = scope_line.lerp(scope_line.anim_num, 1, scope_line.anim_speed * GlobalVars.frametime)
+        end
+        --[[if ui.viewmodel:GetBool() then
+
+        end]]
+        scope_line.offset = ui.offset:Get() * scope_line.anim_num
+        scope_line.length = ui.length:Get() * scope_line.anim_num
+        scope_line.col_1 = ui.col_1:Get()
+        scope_line.col_2 = ui.col_2:Get()
+        scope_line.width = 1
+
+        scope_line.col_1.a = scope_line.col_1.a * scope_line.anim_num
+        scope_line.col_2.a = scope_line.col_2.a * scope_line.anim_num
+        
+        scope_line.start_x = scope_line.screen.x / 2
+        scope_line.start_y = scope_line.screen.y / 2
+
+        --Left
+        Render.GradientBoxFilled(Vector2.new(scope_line.start_x - scope_line.offset, scope_line.start_y), Vector2.new(scope_line.start_x - scope_line.offset - scope_line.length, scope_line.start_y + scope_line.width), scope_line.col_1, scope_line.col_2, scope_line.col_1, scope_line.col_2)
+
+        --Right
+        Render.GradientBoxFilled(Vector2.new(scope_line.start_x + scope_line.offset, scope_line.start_y), Vector2.new(scope_line.start_x + scope_line.offset + scope_line.length, scope_line.start_y + scope_line.width), scope_line.col_1, scope_line.col_2, scope_line.col_1, scope_line.col_2)
+
+        --Up
+        Render.GradientBoxFilled(Vector2.new(scope_line.start_x, scope_line.start_y + scope_line.offset), Vector2.new(scope_line.start_x + scope_line.width, scope_line.start_y + scope_line.offset + scope_line.length), scope_line.col_1, scope_line.col_1, scope_line.col_2, scope_line.col_2)
+
+        --Down
+        Render.GradientBoxFilled(Vector2.new(scope_line.start_x, scope_line.start_y - scope_line.offset), Vector2.new(scope_line.start_x + scope_line.width, scope_line.start_y - scope_line.offset - scope_line.length), scope_line.col_1, scope_line.col_1, scope_line.col_2, scope_line.col_2)
+    
+    end
+end
+
+
+scope_line.on_destroy = function()
+    scope_line.var:SetInt(scope_line.ref)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --anti-aims
 aa[0] =
@@ -350,8 +456,8 @@ end
 --fonts
 local font =
 {
-    --pixel = Render.InitFont("nl\\<uwusense>\\fonts\\pixel.ttf", 10),
-    pixel = Render.InitFont("Smallest Pixel-7", 10),
+    pixel = Render.InitFont("nl\\uwusense\\fonts\\pixel.ttf", 10),
+    --pixel = Render.InitFont("Smallest Pixel-7", 10),
     verdana = Render.InitFont("Verdana", 11, {'r'}),
     verdanabd = Render.InitFont("Verdana Bold", 11, {'r'}),
     verdanabd12 = Render.InitFont("Verdana Bold", 12),
@@ -728,7 +834,7 @@ local draw = function()
             oldConsoleIsVisible = consoleVisible
         end
     end
-
+    scope_line.on_draw()
     --anti defensive
     local lc = CVar.FindVar("cl_lagcompensation")
     if ui.antidefensive:Get() then
@@ -1370,7 +1476,7 @@ local draw = function()
         end
 
         --custom scope
-        if ui.scope:GetColor() and lp:GetPlayer():GetProp("m_bIsScoped") then
+        --[[if ui.scope:GetColor() and lp:GetPlayer():GetProp("m_bIsScoped") then
             local offset = ui.offset:Get()
             local length = ui.length:Get()
             local col = Color.new(ui.scope:GetColor().r, ui.scope:GetColor().g, ui.scope:GetColor().b, 1)
@@ -1379,7 +1485,7 @@ local draw = function()
             Render.GradientBoxFilled(Vector2.new(x/2 + offset, y/2), Vector2.new(x/2 + offset + length, y/2 + 1), col, col1, col, col1)
             Render.GradientBoxFilled(Vector2.new(x/2, y/2 + offset), Vector2.new(x/2 + 1, y/2 + offset + length), col, col, col1, col1)
             Render.GradientBoxFilled(Vector2.new(x/2, y/2 - offset), Vector2.new(x/2 + 1, y/2 - offset - length), col, col, col1, col1)
-        end
+        end]]
 
         --manual arrows
         if ui.manual_arrows:Get() then
@@ -1531,8 +1637,8 @@ local anti_aim = function()
 end
 
 local phrases = {
-    "1",
-    "1 bot",
+    "1 by uwusense",
+    "1 cainedog stai jos",
     "lp2 bot",
     "iq?",
     "Newfag",
@@ -1540,9 +1646,9 @@ local phrases = {
     "covid joiner",
     "ez bot",
     "?",
-    "owned",
+    "another bot owned by uwusense",
     "obliterated bot",
-    "get good get neverlose",
+    "get good get uwusense",
     "nn",
 }
 local get_phrase = function()
@@ -1687,6 +1793,7 @@ end
 Cheat.RegisterCallback("draw", function()
     hook_draw()
     craw2()
+    
 end)
 Cheat.RegisterCallback("pre_prediction", legitaa)
 Cheat.RegisterCallback("createmove", function(cmd)
@@ -1694,6 +1801,7 @@ Cheat.RegisterCallback("createmove", function(cmd)
     gaming()
 end)
 Cheat.RegisterCallback("destroy", function()
+
     scope_line.on_destroy()
     updateConsoleColor(1, 1, 1, 1)
     for _, v in pairs(materials) do
