@@ -189,7 +189,7 @@ local ui =
     manual_arrows = Menu.Switch("Visuals","<uwusense> Indicators","Manual Arrows", false),
     arrows_style = Menu.Combo("Visuals","<uwusense> Indicators","Arrows Style", {"Default", "TeamSkeet"}, 0),
     color1 = Menu.ColorEdit("Visuals","<uwusense> Indicators", "First Color", Color.RGBA(175, 255, 0, 255)),
-    color2 = Menu.ColorEdit("Visuals","<uwusense> Indicators", "Second Color", Color.RGBA(0, 200, 255, 255)),
+    color2 = Menu.ColorEdit("Visuals","<uwusense> Indicators", "Second Color", Color.RGBA(145, 145, 255, 255) ),
 
     --solus ui
     windows = Menu.MultiCombo("Visuals","<uwusense> UI","Windows", {"Watermark", "Spectators", "Keybinds", "FAKE & DT", "Holo Panel"}, 0),
@@ -211,7 +211,26 @@ local ui =
     blur = Menu.Switch("Misc","<uwusense> Misc","Menu Blur", false),
     trashtalk = Menu.Switch("Misc","<uwusense> Misc","Trashtalk", false),
     tpanim = Menu.Switch("Misc","<uwusense> Misc","Disable Thirdperson Animation", false),
+    light_sw = Menu.Switch("Visuals","<uwusense> Lighting", "Enable Custom Lighting", false),
+    m_envLightShadowDirection_x = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Sun Direction x", 0, -1, 1),
+    m_envLightShadowDirection_y = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Sun Direction y", 0, -1, 1),
+    m_envLightShadowDirection_z = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Sun Direction z", 0, -1, 1),
+    m_shadowDirection_x = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Shadow Direction x", 0, -1, 1),
+    m_shadowDirection_y = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Shadow Direction y", 0, -1, 1),
+    m_shadowDirection_z = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Shadow Direction z", 0, -1, 1)
 }
+
+local light_sw = ui.light_sw
+local m_envLightShadowDirection_x = ui.m_envLightShadowDirection_x
+local m_envLightShadowDirection_y = ui.m_envLightShadowDirection_y
+local m_envLightShadowDirection_z = ui.m_envLightShadowDirection_z
+local m_shadowDirection_x = ui.m_shadowDirection_x
+local m_shadowDirection_y = ui.m_shadowDirection_y
+local m_shadowDirection_z = ui.m_shadowDirection_z
+
+
+
+
 
 
 
@@ -247,7 +266,7 @@ scope_line.anim_num = 0
 scope_line.lerp = function(a, b, t)
     return a + (b - a) * t
 end
-
+--aiciamfost
 scope_line.on_draw = function()
     if ui.scope:GetBool() then
         scope_line.var:SetInt(2)
@@ -255,7 +274,9 @@ scope_line.on_draw = function()
         scope_line.anim_speed = ui.anim_speed:Get()
 
         if not local_player or not local_player:IsAlive() or not local_player:GetProp("m_bIsScoped") then 
+            --if scope_line.anim_num < 11 then
             scope_line.anim_num = scope_line.lerp(scope_line.anim_num, 0, scope_line.anim_speed * GlobalVars.frametime)
+            --end
         else
             scope_line.anim_num = scope_line.lerp(scope_line.anim_num, 1, scope_line.anim_speed * GlobalVars.frametime)
         end
@@ -378,13 +399,7 @@ Menu.Text("Global","<uwusense> Info","Thanks for buy! ")
 Menu.Text("Global","<uwusense> Info","Version 1.0")
 Menu.Text("Global","<uwusense> Info","<uwusense>")
 --visuals
-local light_sw = Menu.Switch("Visuals","<uwusense> Lighting", "Enable Custom Lighting", false)
-local m_envLightShadowDirection_x = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Sun Direction x", 0, -1, 1)
-local m_envLightShadowDirection_y = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Sun Direction y", 0, -1, 1)
-local m_envLightShadowDirection_z = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Sun Direction z", 0, -1, 1)
-local m_shadowDirection_x = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Shadow Direction x", 0, -1, 1)
-local m_shadowDirection_y = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Shadow Direction y", 0, -1, 1)
-local m_shadowDirection_z = Menu.SliderFloat("Visuals","<uwusense> Lighting", "Shadow Direction z", 0, -1, 1)
+
 
 
 
@@ -1637,19 +1652,48 @@ local anti_aim = function()
 end
 
 local phrases = {
-    "1 by uwusense",
+    "1 by 𝕦𝕨𝕦𝕤𝕖𝕟𝕤𝕖",
     "1 cainedog stai jos",
     "lp2 bot",
     "iq?",
     "Newfag",
     "new commer",
     "covid joiner",
-    "ez bot",
+    "˜”*°•.˜”*°• ez bot •°*”˜.•°*”˜",
     "?",
-    "another bot owned by uwusense",
-    "obliterated bot",
-    "get good get uwusense",
+    "another bot owned by 🆄🆆🆄🆂🅴🅽🆂🅴",
+    "`•.,¸¸,.•´¯obliterated bot¯´•.,¸¸,.•`",
+    "get good get ᵤwᵤₛₑₙₛₑ    ",
     "nn",
+    "vamos amigos, just got owned by ⓤⓦⓤⓢⓔⓝⓢⓔ",
+    "1 by ј𝔷 尺ｅ𝔷ØＬν乇ŕ",
+    "1 by ⓙＺ R𝔢z𝓞𝓁Ｖεя",
+    "1 by  𝙅𝙕 𝙍𝙀𝙕𝙊𝙇𝙑𝙀𝙍",
+    "1 by JZ REZOLVER",
+    "OWNED BY (っ◔◡◔)っ ♥ 卄ᐯ卄 Ҝ丨几Ꮆ 卂ㄚㄩ ♥",
+    "1 stai jos sa iti trag la MЦIΣ",
+    "muie (◣_◢)",
+    "MЦIΣ (◣_◢)",
+    "𝕐𝕠𝕦 𝕒𝕨𝕒𝕝𝕝 𝕗𝕚𝕣𝕤𝕥? 𝕆𝕜 𝕝𝕖𝕥𝕤 𝕗𝕦𝕟 (◣◢)",
+    "𝕡𝕚𝕟𝕘𝕦𝕚𝕟 𝕒𝕤𝕚𝕒𝕥𝕚𝕔 stay parked",
+    "1 SANCHEZj bos",
+    "esti slab",
+    "mue",
+    "0 iq",
+    "1 by jz rezolver",
+    "muie (◣_◢)",
+    "get beamed by GETREKT.IO ON RUST AXAXAXAXA",
+    "o fut pe mata 𝓶𝓪𝓻𝓮",
+    "stai jos 𝔫𝔫   ",
+    "get good get bamboo",
+    "so ez for 𝓽𝓪𝓬𝓽𝓾",
+    "1 by 𝒿𝓩 Ř€ƵＯ𝓛Vᗴʳ  👍",
+    "l2p nigger",
+    "𝖒𝖆 𝖘𝖕𝖎𝖓𝖟𝖚𝖗 𝖈𝖚 𝖒𝖆𝖎𝖈𝖆𝖙𝖆 𝖉𝖊 𝖌𝖎𝖙",
+    "js rezolver",
+    "vamos amigos, just got owned by ⓙⓢ ⓡⓔⓩⓞⓛⓥⓔⓡ",
+    "NU MAI FURA SOS, DU TE LA KFC IA TI ARIPIOARE ⒷⓄⓈ",
+
 }
 local get_phrase = function()
     return phrases[Utils.RandomInt(1, #phrases)]:gsub('"', '')
@@ -1820,3 +1864,4 @@ print("Version: 1.0")
 print("State: Release")
 print("Thanks For Buy!")
 print("Have good game!")
+
